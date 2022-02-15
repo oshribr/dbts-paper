@@ -119,6 +119,7 @@ data set $\mathcal{X}$ of multiple time series:
 \begin{equation}
 	\theta^* = \arg\min_\theta \mathbb{E}_{X \in \mathcal{X},t
 	\in 1 ... T-k}\left[ -\log \Pr(X_{t+1:t+k}|M_\theta(X_{1:t}))\right]
+	\label{eqn:theta-star}
 \end{equation}
 When the model is differentiable by $\theta$, the task is
 usually accomplished by performing a stochastic gradient loss
@@ -228,19 +229,23 @@ with more connections, intermediate modules and sampling-based
 variational layers.
 
 \paragraph{Input and Output} This architecture normally accepts
-data vectors and outputs vectors of predictions of means and
-standard deviations (the output is twice as wide as the input).
-Then, to generate a forecast, one samples from
-$$\mathcal{N}(\mu, \sigma)$$ for each component, and feeds the
-sample as the input to the next time step.
+observation vectors and outputs vectors of distribution
+parameters for the belief distribution of the observations at
+the next time step. In the case of frequently used normal
+distributions, the output vector consists of means $\mu$ and
+standard deviations $\sigma$ of all dimensions and is twice as
+wide as the input.  This allows to also assess uncertainty
+multiple steps into the future: one can repeatedly sample from
+the observation belief distribution at each future step, and
+feed the sample as the input to the following step.
 
 \paragraph{Training} The model is trained to maximize
 probability of prediction. In the most basic case, a single step
 is predicted for each time step in the series. If a series has
-10 steps, then steps 1 .. 9 are the input, and the steps 2 .. 10
-are the truth. The network is trained to minimize negative log
-probability of true observations given predictions under
-variational approximation of product of Gaussians. 
+10 steps, then steps $1 ... 9$ are the input, and the steps $2
+... 10$ are the truth. Following~\eqref{eqn:theta-star}, the
+network is trained to minimize negative log probability of true
+observations given the predicted belief distributions.
 
 \paragraph{Novelty detection} After training, the model is used
 to produce predictions of future observations. There are two
@@ -276,12 +281,18 @@ To achieve these objectives, \textbf{we propose the following
 changes} (Figure~\ref{fig:dt-uncertainty-propagation}):
 
 \begin{enumerate}
-\item The input, as well as the output, is a vector of means followed
-by standard deviations. If the data has 5 components, the input
-will be 10-dimensional. For observed data --- measurements
-present at the current time step --- the standard deviation is
-zero. For missing data the input is the mean and the standard deviation
-as predicted from the preceding time steps.
+\item The input, as well as the output, is a vector of
+distribution parameters. For simplicity, we will confine further
+discussion to the case of independent normal belief
+distributions for each component; however, other distribution
+shapes can be used. For the independent normal
+distributions, the distribution parameter vector consists of the
+means followed by the standard deviations. If the data has 5
+components, the input will be 10-dimensional. For observed data
+--- measurements present at the current time step --- the
+standard deviation is zero. For missing data the input is the
+mean and the standard deviation as predicted from the preceding
+time steps.
 
 \item Since we introduce confidence into the input, we cannot
 train the network myopically, on a single step prediction --- or
@@ -302,8 +313,8 @@ predicted standard deviation to increase along the time axis
 for each component.
 
 The ability of probabilistic forecasting with uncertainty, in
-the form of a multivariate Gaussian distributions, far into the
-future, opens opportunity for application for more robust
+the form of multivariate normal distributions, far into the
+future, opens opportunity for application to more robust
 novelty detection approaches. Instead of detecting novelty based
 on log probability of observations given predictions from the
 past, which is prone to false positives due to observation
