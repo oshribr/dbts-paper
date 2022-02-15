@@ -22,51 +22,77 @@
 \maketitle
 
 \begin{abstract}
-Systems are commonly monitored for health and security through collection and
-streaming of multivariate time series. Advances in time series forecasting due
-to adoption of multilayer recurrent neural network architectures make it
-possible to forecast in high-dimensional time series, and identify and classify
-novelties early, based on subtle changes in the trends. However, mainstream
-approaches to multi-variate time series predictions do not handle well cases
-when the ongoing forecast must include uncertainty, nor they are robust to
-missing data. We introduce a new architecture for time series monitoring based
-on combination of state-of-the-art methods of forecasting in high-dimensional
-time series with full Bayesian handling of uncertainty. We demonstrate
-advantage of the architecture for time series forecasting and novelty
-detection, in particular with partially missing data, and empirically evaluate
-and compare the architecture to state-of-the-art approaches on a real-world
-data set.
+Systems are commonly monitored for health and security through
+collection and streaming of multivariate time series. Advances
+in time series forecasting due to adoption of multilayer
+recurrent neural network architectures make it possible to
+forecast in high-dimensional time series, and identify and
+classify novelties early, based on subtle changes in the trends.
+However, mainstream approaches to multi-variate time series
+predictions do not handle well cases when the ongoing forecast
+must include uncertainty, nor they are robust to missing data.
+We introduce a new architecture for time series monitoring based
+on combination of state-of-the-art methods of forecasting in
+high-dimensional time series with full Bayesian handling of
+uncertainty. We demonstrate advantage of the architecture for
+time series forecasting and novelty detection, in particular
+with partially missing data, and empirically evaluate and
+compare the architecture to state-of-the-art approaches on a
+real-world data set.
 \end{abstract}
 
 
 
 \section{Introduction}
 
-Evolving state of OT environments  is monitored through collection and
-streaming of multivariate time series. Advances in time series forecasting due
-to adoption of multilayer recurrent neural network architectures make it
-possible to forecast in high-dimensional time series, and identify and
-classify novelties (anomalies) early, based on subtle changes in the trends.
-However, mainstream approaches to multi-variate time series predictions do not
-handle well cases when the ongoing forecast must include uncertainty and shape
-(possibly multimodal) of future distributions of observations. Stochastic
-latent variable variants of high-dimensional time series models where
-proposed, but so far have had to rely on sampling to account for uncertainty,
-limiting the performance of data handling. In addition, main-stream methods of
-multivariate time series forecasting are not well-suited for handling missing
-data, while transient unavailability of some of the data sources (e.g. when a
-sensor stops working, or a transport channel malfunctions) is  a common case
-with monitoring of complex systems.  Combining state-of-the-art methods of
-forecasting in high-dimensional time series (based on neural-network
-architectures) with full Bayesian handling of uncertainty (e.g. with help of
-deep probabilistic programming systems such as Pyro, Tensorflow Probability,
-and others) will allow to achieve robust forecasting (a precondition for
-anomaly detection) in high-dimensional time series with missing data.
-Representing future states as inferred posterior probability distributions
-will allow to identify and classify anomalies (e.g. hardware failures,
-software errors, communication, malicious activity, cyberattacks, e.t.c.) on a
-higher level of model abstraction — the latent variables of the model, and
-achieve finer and more robust anomaly detection and characterization.
+Modern information systems and operation environments are
+commonly monitored through collection and streaming of
+multivariate time series. The monitoring tasks comprise both
+forecasting, for planning of resource allocation and decision
+making, and novelty detection and characterization, for ensuring
+faultless functioning and early mitigation of failures and
+threats.  Advances in time series forecasting
+due to adoption of multilayer recurrent neural network
+architectures made it possible to forecast in high-dimensional
+time series, and identify and classify novelties (anomalies)
+early, based on subtle changes in the trends.  However,
+mainstream approaches to multi-variate time series modelling
+do not handle well cases when uncertainty is involved, either in
+the input, when some of the observations are missing, or in the
+output when the distribution of future observations, rather than
+their point values, is predicted. For forecast uncertainty
+modelling, stochastic latent variable
+variants of high-dimensional time series models where
+introduced, but so far have had to rely on sampling to account
+for uncertainty, limiting the performance of data handling.
+Imputation schemes were proposed for dealing with 
+missing data, however, they do not generally give a satisfactory
+solution in presence of transient unavailability of some of
+the data sources (e.g. when a sensor stops working, or a
+transport channel malfunctions), which is  a common case with
+monitoring of complex systems.  
+
+A systematic and theoretically founded approach to handling
+both input and output uncertainty would thus constitute a
+significant and welcome contribution to the theory and practice
+of monitoring of multivariate time series. It would also be
+highly desirable for such approach to facilitate efficient
+offline (learning) and online (inference) computations. In this
+ongoing research, we propose a deep learning architecture which
+uses a simple but powerful extension of traditional recurrent
+neural network (RNN) architecture which allows both 
+\begin{itemize} 
+\item to handle missing inputs
+in some or all of the components in a multivariate time series,
+\item and to accomplish multi-step probabilistic forecasting
+\end{itemize}
+in high-dimensional time series, paving a path to better
+decision making and finer and more robust anomaly detection and
+characterization.  We evaluate the architecture on a real-world
+data set of multivariate time series collected from a 
+network for cloud computing, and empirically demonstrate
+advantage of the proposed architecture over commonly used
+approaches.
 
 \section{Concept}
 
@@ -181,10 +207,10 @@ Gaussians.
 predictions of future observations. There are two related but different
 phenomena indication a novelty (anomaly) in time series behavior:
 \begin{enumerate}
-	\item Predicted volatility of the time series is high, that is, future
-	observations can only be forecast uncertainly (with high variance). 
-	\item Probability of actual observations, when observed, given a prediction
-	from a past state, is low.
+\item Predicted volatility of the time series is high, that is, future
+observations can only be forecast uncertainly (with high variance). 
+\item Probability of actual observations, when observed, given a prediction
+from a past state, is low.
 \end{enumerate}
 
 Either phenomenon, or both of them, can be used to alert about novelties in the
