@@ -12,7 +12,7 @@
 
 \begin{document}
 
-\title{Monitoring Time Series With Missing Values:\\a Deep Bayesian Approach}
+\title{Monitoring Time Series With Missing Values:\\a Deep Probabilistic Approach}
 
 \author{Oshri Barazani\inst{1} \and David Tolpin\inst{2}}
 \institute{PUB+ \and Ben-Gurion University of the Negev
@@ -33,7 +33,7 @@ predictions do not handle well cases when the ongoing forecast
 must include uncertainty, nor they are robust to missing data.
 We introduce a new architecture for time series monitoring based
 on combination of state-of-the-art methods of forecasting in
-high-dimensional time series with full Bayesian handling of
+high-dimensional time series with full probabilistic handling of
 uncertainty. We demonstrate advantage of the architecture for
 time series forecasting and novelty detection, in particular
 with partially missing data, and empirically evaluate and
@@ -94,7 +94,42 @@ network for cloud computing, and empirically demonstrate
 advantage of the proposed architecture over commonly used
 approaches.
 
-\section{Concept}
+\section{Problem: Multivariate Time Series Forecasting}
+
+The core problem we address is forecasting in a multivariate
+time series. Formally, a \textit{time series} is a matrix $X$
+of shape $T\times N$, where $T$ is the number of time steps and
+$N$ is the number of dimensions. The time steps are assumed to
+be equispaced.  A $k$-step probabilistic \textit{forecast}
+$\mathcal{F}_{tk}$ at time $t$ is the belief distribution of
+time series $X_{t+1:t+k}$ for time steps $t+1 ... t+k$ given the
+observed time series $X_{1:t}$ for time steps $1...t$.  
+
+The forecasting is accomplished by applying model $\mathcal{M}_\theta$
+parameterized by parameters $\theta$ to the observed time
+series:
+\begin{equation}
+\mathcal{F}_{tk} = \mathcal{M}_\theta(X_{1:t})
+\end{equation}
+The machine learning task is to devise $\theta^*$
+that gives the best forecast, in terms of a certain loss
+function. A natural loss in the probabilistic setting is the
+average negative log likelihood of $\theta$ given a training
+data set $\mathcal{X}$ of multiple time series:
+\begin{equation}
+	\theta^* = \arg\min_\theta \mathbb{E}_{X \in \mathcal{X},t
+	\in 1 ... T-k}\left[ -\log \Pr(X_{t+1:t+k}|M_\theta(X_{1:t}))\right]
+\end{equation}
+When the model is differentiable by $\theta$, the task is
+usually accomplished by performing a stochastic gradient loss
+minimization.
+
+In the basic case, $X$ is real-valued, $X \in \mathbb{R}^{T
+\times N}$. Here, we are interested in an extension of the basic
+case, in which some of the elements can be missing from $X$, that is
+$X \in (\mathbb{R} \cup \bot)^{T \times N}$.
+
+\section{Architecture: Recurrent Neural Network with Uncertainty Propagation}
 
 \begin{figure}
 \begin{subfigure}{.64\textwidth}
@@ -175,133 +210,121 @@ approaches.
 \label{fig:dt-time-series-models}
 \end{figure}
 
-There is a range of neural recurrent models of varying complexity to deal with
-time series prediction. Most models include a recurrent unit which threads the
-state through the time steps, accepts data as inputs and produces next step
-predictions as outputs. The simplest model is an RNN with a fully-connected
-readout layer to produce predictions (Figure~\ref{fig:dt-conventional-model}).
-RNN can be based on GRU, LSTM, or another variant, and is often multi-layer.
-Architectures  may also include intermediate modules and sampling-based
+A popular realization of the forecasting model
+$\mathcal{M}_\theta$ is a recurrent neural network (RNN), with
+$\theta$ corresponding to the network parameters.  There is a
+range of neural recurrent models of varying complexity to deal
+with time series forecasting. Most models include a recurrent
+unit which threads the state through the time steps, accepts
+data as inputs and produces next step predictions as outputs.
+The simplest model is an RNN with a fully-connected readout
+layer to produce forecasts
+(Figure~\ref{fig:dt-conventional-model}).  RNN can be based on
+LSTM~\cite{}, GRU~\cite{}, or another architectural variant, and
+is often multi-layer.  Architectures  may also include
+intermediate modules and sampling-based variational
+layers~\cite{}. The overall architecture stays almost the same,
+with more connections, intermediate modules and sampling-based
 variational layers.
 
-Variants are stochastic RNNs, variational RNNs, etc. The
-overall architecture stays almost the same, with more
-connections, intermediate modules and sampling-based variational
-layers.
+\paragraph{Input and Output} This architecture normally accepts
+data vectors and outputs vectors of predictions of means and
+standard deviations (the output is twice as wide as the input).
+Then, to generate a forecast, one samples from
+$$\mathcal{N}(\mu, \sigma)$$ for each component, and feeds the
+sample as the input to the next time step.
 
-\paragraph{Input and Output} This architecture normally accepts data vectors
-and outputs vectors of predictions of means and standard deviations (the output
-is twice as wide as the input). Then, to generate a forecast, one samples from
-$$\mathcal{N}(\mu, \sigma)$$ for each component, and feeds the sample as the
-input to the next time step.
+\paragraph{Training} The model is trained to maximize
+probability of prediction. In the most basic case, a single step
+is predicted for each time step in the series. If a series has
+10 steps, then steps 1 .. 9 are the input, and the steps 2 .. 10
+are the truth. The network is trained to minimize negative log
+probability of true observations given predictions under
+variational approximation of product of Gaussians. 
 
-\paragraph{Training} The model is trained to maximize probability of
-prediction. In the most basic case, a single step is predicted for each time
-step in the series. If a series has 10 steps, then steps 1 .. 9 are input, and
-the steps 2 .. 10 are truth. The network is trained to
-minimize negative log probability of true observations given
-predictions under variational approximation of product of
-Gaussians. 
-
-\paragraph{Novelty detection} After training, the model is used to produce
-predictions of future observations. There are two related but different
-phenomena indication a novelty (anomaly) in time series behavior:
+\paragraph{Novelty detection} After training, the model is used
+to produce predictions of future observations. There are two
+related but different phenomena indication a novelty (anomaly)
+in time series behavior:
 \begin{enumerate}
 \item Predicted volatility of the time series is high, that is, future
 observations can only be forecast uncertainly (with high variance). 
 \item Probability of actual observations, when observed, given a prediction
 from a past state, is low.
 \end{enumerate}
+Either phenomenon, or both of them, can be used to alert about
+novelties in the time series. In recurrent neural network
+architectures, the hidden state ($h_t$ in
+Figure~\ref{fig:dt-time-series-models}) can be used to identify
+and classify anomalies.
 
-Either phenomenon, or both of them, can be used to alert about novelties in the
-time series. In recurrent neural network architectures, the hidden state ($h_t$
-in Figure~\ref{fig:dt-time-series-models}) can be used to identify and classify
-anomalies.
-
-However, the basic scheme outlined above poses difficulty in applications with
-high-dimensional time series and partially missing observations. Sampling based
-uncertainty assertion impacts performance, and missing observations are often
-imputed in \textit{ad hoc} manner. An architecture which
+However, the basic scheme outlined above poses difficulty in
+applications with high-dimensional time series and partially
+missing observations. Sampling based uncertainty assertion
+impacts performance, and missing observations are often imputed
+in \textit{ad hoc} manner~\cite{}. An architecture which
 incorporates confidence about data and in which observed and
-predicted data are interchangable is  highly, desirable. For example,k if out of 5 components 3 were
-measured and 2 predicted from an earlier step we want to input
-them both into the next time step for further forecasting. In
-addition, the model architecture should be capable of robust uncertainty
-prediction and benefit from training with multiple steps of out-of-sample data.
-To achieve these objectives, we propose the following changes
-(Figure~\ref{fig:dt-uncertainty-propagation}):
+predicted data are interchangeable is  highly desirable. For
+example, if out of 5 components 3 were measured and 2 predicted
+from an earlier step we want to input them both into the next
+time step for further forecasting. In addition, the model
+architecture should be capable of robust uncertainty prediction
+and benefit from training with multiple steps of out-of-sample
+data.
+
+To achieve these objectives, \textbf{we propose the following
+changes} (Figure~\ref{fig:dt-uncertainty-propagation}):
 
 \begin{enumerate}
 \item The input, as well as the output, is a vector of means followed
 by standard deviations. If the data has 5 components, the input
 will be 10-dimensional. For observed data --- measurements
 present at the current time step --- the standard deviation is
-zero. For missing data the input is mean and standard deviation
-as predicted from the previous time step.
+zero. For missing data the input is the mean and the standard deviation
+as predicted from the preceding time steps.
 
-\item Since we introduce confidence into the input, we cannot train
-the network myopically, on a single step prediction --- or the
-standard deviations in the input data will always be zero, and
-the network will never learn how to use them. To overcome this,
-we train on multiple predicted steps. We feed each prediction,
-without sampling, as input to the next step and compute the loss
-as negative log probability of this number of future points versus our prediction.
+\item Since we introduce confidence into the input, we cannot
+train the network myopically, on a single step prediction --- or
+the standard deviations in the input data will always be zero,
+and the network will never learn how to use them. To overcome
+this, we train on multiple predicted steps. We feed each
+prediction, without sampling, as input to the next step and
+compute the loss as negative log probability of this number of
+future points versus our prediction.
 \end{enumerate}
 
 To illustrate, given the data set of 5 dimensions, the input has 10
 dimensions. If we train with 3 time steps lookahead, the ground
-truth will be a matrix of size 3x5. The prediction against
+truth will be a matrix of size $3\times 5$. The prediction against
 which the likelihood of this ground truth is computed will be
-a matrix of size 3x10. Intuitively, we would expect the
+a matrix of size $3 \times 10$. Intuitively, we would expect the
 predicted standard deviation to increase along the time axis
 for each component.
 
-The ability of Bayesian forecasting with uncertainty, in the form of a multivariate Gaussian distributions, far into the future, opens opportunity for application for more robust novelty detection
-approaches. Instead of detecting novelty based on log probability of observations given predictions from the past, which is prone to false positives due to observation noise, novelties can be detected and analysed by comparing predictions of the same time point from different points in the past. In this case, KL-divergence between predictions provide a theoretically sound and robust mechanism for detection of anomalies~\cite{10.1145/3297280.3297414}, and is in particular relevant for monitoring of large OT environments with high dimensionality of time series and occasional missing values and heteroskedastic noise.
+The ability of probabilistic forecasting with uncertainty, in
+the form of a multivariate Gaussian distributions, far into the
+future, opens opportunity for application for more robust
+novelty detection approaches. Instead of detecting novelty based
+on log probability of observations given predictions from the
+past, which is prone to false positives due to observation
+noise, novelties can be detected and analysed by comparing
+predictions of the same time point from different points in the
+past. In this case, KL-divergence between predictions provide a
+theoretically sound and robust mechanism for detection of
+anomalies, and is in particular relevant for monitoring of large
+operation environments with high dimensionality of time series
+and occasional missing values and heteroskedastic noise.
 
-\section{Case Studies}
+\section{Case Study: Monitoring a Computer Cloud}
 
 
 \section{Related Work} 
 
 \section{Discussion and Future Research}
 
-Monitoring of complex systems based on multivariate time series meets
-challenges in adapting a general algorithm to  domain-specific properties of
-the particular system~\cite{DBLP:conf/iccst/DymshitsMT17}. As the \textbf{first
-step}, the structure and scale of time series emerging in monitoring of power
-plants, and relevance of various components of the time series for novelty
-detection, in particular related to cybersecurity, has to be analyzed. As
-compelling as it may sound, feeding all of the available observations in their
-raw form to a general model will unlikely to result in robust novelty
-detection. Hence, we propose to start with empirical evaluation of smoothing
-and forecasting capabilities of existing multi-variate time series model on
-different representations of the time series. Conventional neural multivariate
-time series models, while having drawbacks, will aid in selecting the right
-representation of the data, which can be assessed by the quality of
-forecasting, which should be consistently high in normal operation and decrease
-in presence of otherwise observed disturbances (hardware and operational
-failures, cybersecurity attacks, etc.). Using established modelling approaches
-as a test bench, we will be able to come with an appropriate representation of
-the time series emerging in power infrastructure monitoring.
+\section*{Acknowledgements}
 
-\textbf{Following this}, we propose implementing and evaluating the deep
-Bayesian model, as outlined above, in its basic form, implemented as an
-extension of an established time series prediction architecture. By doing so,
-we will be able to use the earlier architecture as a comparison baseline, and
-assess improvements due to Bayesian handling of uncertainty by comparing
-performance of detection and identification of novelties. Both recorded real
-and simulated novelties can be used for this stage.
-
-Provided that the previous step succeeds, research on classification and
-characterization of novelties can be commenced, which is, in a sense,
-orthogonal to time series forecasting, and is based on extending the base model
-with modules using the internal state of the recurrent network to learn to
-recognize or characterize types and features of novelties. This layered plan of
-the research allows to go back to earlier steps (data representation, extension
-of time series models with Bayesian handling of uncertainty, advanced
-techniques for novelty identification and characterization) in case results of
-a later step uncover obstacles introduced earlier and require changes in theory
-or implementation. 
+\bibliographystyle{splncs04}
+\bibliography{refs.bib}
 
 \end{document}
