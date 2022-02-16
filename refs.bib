@@ -1,0 +1,258 @@
+@article{BDS21,
+	author = {Bansal, Parikshit and Deshpande, Prathamesh and Sarawagi, Sunita},
+	title = {Missing Value Imputation on Multidimensional Time Series},
+	year = {2021},
+	issue_date = {July 2021},
+	publisher = {VLDB Endowment},
+	volume = {14},
+	number = {11},
+	issn = {2150-8097},
+	url = {https://doi.org/10.14778/3476249.3476300},
+	doi = {10.14778/3476249.3476300},
+	abstract = {We present DeepMVI, a deep learning method for missing value imputation in multidimensional time-series datasets. Missing values are commonplace in decision support platforms that aggregate data over long time stretches from disparate sources, whereas reliable data analytics calls for careful handling of missing data. One strategy is imputing the missing values, and a wide variety of algorithms exist spanning simple interpolation, matrix factorization methods like SVD, statistical models like Kalman filters, and recent deep learning methods. We show that often these provide worse results on aggregate analytics compared to just excluding the missing data.DeepMVI expresses the distribution of each missing value conditioned on coarse and fine-grained signals along a time series, and signals from correlated series at the same time. Instead of resorting to linearity assumptions of conventional matrix factorization methods, DeepMVI harnesses a flexible deep network to extract and combine these signals in an end-to-end manner. To prevent over-fitting with high-capacity neural networks, we design a robust parameter training with labeled data created using synthetic missing blocks around available indices. Our neural network uses a modular design with a novel temporal transformer with convolutional features, and kernel regression with learned embeddings.Experiments across ten real datasets, five different missing scenarios, comparing seven conventional and three deep learning methods show that DeepMVI is significantly more accurate, reducing error by more than 50% in more than half the cases, compared to the best existing method. Although slower than simpler matrix factorization methods, we justify the increased time overheads by showing that DeepMVI provides significantly more accurate imputation that finally impacts quality of downstream analytics.},
+	journal = {Proc. VLDB Endow.},
+	month = {jul},
+	pages = {2533–2545},
+	numpages = {13}
+}
+
+@article{CPK+18,
+  doi = {10.1038/s41598-018-24271-9},
+  url = {https://doi.org/10.1038/s41598-018-24271-9},
+  year = {2018},
+  month = apr,
+  publisher = {Springer Science and Business Media {LLC}},
+  volume = {8},
+  number = {1},
+  author = {Zhengping Che and Sanjay Purushotham and Kyunghyun Cho and David Sontag and Yan Liu},
+  title = {Recurrent Neural Networks for Multivariate Time Series with Missing Values},
+  journal = {Scientific Reports}
+}
+
+@inproceedings{SYG+19,
+  author={Suo, Qiuling and Yao, Liuyi and Xun, Guangxu and Sun, Jianhui and Zhang, Aidong},
+  booktitle={2019 IEEE International Conference on Healthcare Informatics (ICHI)}, 
+  title={Recurrent Imputation for Multivariate Time Series with Missing Values}, 
+  year={2019},
+  volume={},
+  number={},
+  pages={1-3},
+  doi={10.1109/ICHI.2019.8904638}
+}
+
+@inproceedings{KC18,
+	title     = {Temporal Belief Memory: Imputing Missing Data during RNN Training},
+	author    = {Yeo Jin Kim and Min Chi},
+	booktitle = {Proceedings of the Twenty-Seventh International Joint Conference on
+		Artificial Intelligence, {IJCAI-18}},
+	publisher = {International Joint Conferences on Artificial Intelligence Organization},             
+	pages     = {2326--2332},
+	year      = {2018},
+	month     = {7},
+	doi       = {10.24963/ijcai.2018/322},
+	url       = {https://doi.org/10.24963/ijcai.2018/322},
+}
+
+
+@InProceedings{LKW16,
+	title = 	 {Directly Modeling Missing Data in Sequences with RNNs: Improved Classification of Clinical Time Series},
+	author = 	 {Lipton, Zachary C and Kale, David and Wetzel, Randall},
+	booktitle = 	 {Proceedings of the 1st Machine Learning for Healthcare Conference},
+	pages = 	 {253--270},
+	year = 	 {2016},
+	editor = 	 {Doshi-Velez, Finale and Fackler, Jim and Kale, David and Wallace, Byron and Wiens, Jenna},
+	volume = 	 {56},
+	series = 	 {Proceedings of Machine Learning Research},
+	address = 	 {Northeastern University, Boston, MA, USA},
+	month = 	 {18--19 Aug},
+	publisher =    {PMLR},
+	pdf = 	 {http://proceedings.mlr.press/v56/Lipton16.pdf},
+	url = 	 {https://proceedings.mlr.press/v56/Lipton16.html},
+	abstract = 	 {We demonstrate a simple strategy to cope with missing data in sequential inputs, addressing the task of multilabel classification of diagnoses given clinical time series. Collected from the intensive care unit (ICU) of a major urban medical center, our data consists of multivariate time series of observations. The data is irregularly sampled, leading to missingness patterns in re-sampled sequences. In this work, we show the remarkable ability of RNNs to make effective use of binary indicators to directly model missing data, improving AUC and F1significantly. However, while RNNs can learn arbitrary functions of the missing data and observations, linear models can only learn substitution values. For linear models and MLPs, we show an alternative strategy to capture this signal. Additionally, we evaluate LSTMs, MLPs, and linear models trained on missingness patterns only, showing that for several diseases, what tests are run can be more predictive than the results themselves.}
+}
+
+@inproceedings{BRH15,
+	author = {Berglund, Mathias and Raiko, Tapani and Honkala, Mikko and K\"{a}rkk\"{a}inen, Leo and Vetek, Akos and Karhunen, Juha T},
+	booktitle = {Advances in Neural Information Processing Systems},
+	editor = {C. Cortes and N. Lawrence and D. Lee and M. Sugiyama and R. Garnett},
+	pages = {},
+	publisher = {Curran Associates, Inc.},
+	title = {Bidirectional Recurrent Neural Networks as Generative Models},
+	url = {https://proceedings.neurips.cc/paper/2015/file/c75b6f114c23a4d7ea11331e7c00e73c-Paper.pdf},
+	volume = {28},
+	year = {2015}
+}
+
+
+@InProceedings{AV20,
+	title = 	 {Frequentist Uncertainty in Recurrent Neural Networks via Blockwise Influence Functions},
+	author =       {Alaa, Ahmed and Van Der Schaar, Mihaela},
+	booktitle = 	 {Proceedings of the 37th International Conference on Machine Learning},
+	pages = 	 {175--190},
+	year = 	 {2020},
+	editor = 	 {III, Hal Daumé and Singh, Aarti},
+	volume = 	 {119},
+	series = 	 {Proceedings of Machine Learning Research},
+	month = 	 {13--18 Jul},
+	publisher =    {PMLR},
+	pdf = 	 {http://proceedings.mlr.press/v119/alaa20b/alaa20b.pdf},
+	url = 	 {https://proceedings.mlr.press/v119/alaa20b.html},
+	abstract = 	 {Recurrent neural networks (RNNs) are instrumental in modelling sequential and time-series data. Yet, when using RNNs to inform decision-making, predictions by themselves are not sufficient {—} we also need estimates of predictive uncertainty. Existing approaches for uncertainty quantification in RNNs are based predominantly on Bayesian methods; these are computationally prohibitive, and require major alterations to the RNN architecture and training. Capitalizing on ideas from classical jackknife resampling, we develop a frequentist alternative that: (a) does not interfere with model training or compromise its accuracy, (b) applies to any RNN architecture, and (c) provides theoretical coverage guarantees on the estimated uncertainty intervals. Our method derives predictive uncertainty from the variability of the (jackknife) sampling distribution of the RNN outputs, which is estimated by repeatedly deleting “blocks” of (temporally-correlated) training data, and collecting the predictions of the RNN re-trained on the remaining data. To avoid exhaustive re-training, we utilize influence functions to estimate the effect of removing training data blocks on the learned RNN parameters. Using data from a critical care setting, we demonstrate the utility of uncertainty quantification in sequential decision-making.}
+}
+
+@inproceedings{NIPS2016_208e43f0,
+ author = {Fraccaro, Marco and S\o nderby, S\o ren Kaae and Paquet, Ulrich and Winther, Ole},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {D. Lee and M. Sugiyama and U. Luxburg and I. Guyon and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Sequential Neural Models with Stochastic Layers},
+ url = {https://proceedings.neurips.cc/paper/2016/file/208e43f0e45c4c78cafadb83d2888cb6-Paper.pdf},
+ volume = {29},
+ year = {2016}
+}
+
+@article{MFS+21,
+	title = {A review of uncertainty quantification in deep learning: Techniques, applications and challenges},
+	journal = {Information Fusion},
+	volume = {76},
+	pages = {243-297},
+	year = {2021},
+	issn = {1566-2535},
+	doi = {https://doi.org/10.1016/j.inffus.2021.05.008},
+	url = {https://www.sciencedirect.com/science/article/pii/S1566253521001081},
+	author = {Moloud Abdar and Farhad Pourpanah and Sadiq Hussain and Dana Rezazadegan and Li Liu and Mohammad Ghavamzadeh and Paul Fieguth and Xiaochun Cao and Abbas Khosravi and U. Rajendra Acharya and Vladimir Makarenkov and Saeid Nahavandi},
+	keywords = {Artificial intelligence, Uncertainty quantification, Deep learning, Machine learning, Bayesian statistics, Ensemble learning},
+	abstract = {Uncertainty quantification (UQ) methods play a pivotal role in reducing the impact of uncertainties during both optimization and decision making processes. They have been applied to solve a variety of real-world problems in science and engineering. Bayesian approximation and ensemble learning techniques are two widely-used types of uncertainty quantification (UQ) methods. In this regard, researchers have proposed different UQ methods and examined their performance in a variety of applications such as computer vision (e.g., self-driving cars and object detection), image processing (e.g., image restoration), medical image analysis (e.g., medical image classification and segmentation), natural language processing (e.g., text classification, social media texts and recidivism risk-scoring), bioinformatics, etc. This study reviews recent advances in UQ methods used in deep learning, investigates the application of these methods in reinforcement learning, and highlights fundamental research challenges and directions associated with UQ.}
+}
+
+@inproceedings{FSP+16,
+	author = {Fraccaro, Marco and S\o nderby, S\o ren Kaae and Paquet, Ulrich and Winther, Ole},
+	booktitle = {Advances in Neural Information Processing Systems},
+	editor = {D. Lee and M. Sugiyama and U. Luxburg and I. Guyon and R. Garnett},
+	pages = {},
+	publisher = {Curran Associates, Inc.},
+	title = {Sequential Neural Models with Stochastic Layers},
+	url = {https://proceedings.neurips.cc/paper/2016/file/208e43f0e45c4c78cafadb83d2888cb6-Paper.pdf},
+	volume = {29},
+	year = {2016}
+}
+
+@inproceedings{SZN+19,
+	author = {Su, Ya and Zhao, Youjian and Niu, Chenhao and Liu, Rong and Sun, Wei and Pei, Dan},
+	title = {Robust Anomaly Detection for Multivariate Time Series through Stochastic Recurrent Neural Network},
+	year = {2019},
+	isbn = {9781450362016},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	url = {https://doi.org/10.1145/3292500.3330672},
+	doi = {10.1145/3292500.3330672},
+	abstract = {Industry devices (i.e., entities) such as server machines, spacecrafts, engines, etc., are typically monitored with multivariate time series, whose anomaly detection is critical for an entity's service quality management. However, due to the complex temporal dependence and stochasticity of multivariate time series, their anomaly detection remains a big challenge. This paper proposes OmniAnomaly, a stochastic recurrent neural network for multivariate time series anomaly detection that works well robustly for various devices. Its core idea is to capture the normal patterns of multivariate time series by learning their robust representations with key techniques such as stochastic variable connection and planar normalizing flow, reconstruct input data by the representations, and use the reconstruction probabilities to determine anomalies. Moreover, for a detected entity anomaly, OmniAnomaly can provide interpretations based on the reconstruction probabilities of its constituent univariate time series. The evaluation experiments are conducted on two public datasets from aerospace and a new server machine dataset (collected and released by us) from an Internet company. OmniAnomaly achieves an overall F1-Score of 0.86 in three real-world datasets, signicantly outperforming the best performing baseline method by 0.09. The interpretation accuracy for OmniAnomaly is up to 0.89.},
+	booktitle = {Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining},
+	pages = {2828–2837},
+	numpages = {10},
+	keywords = {multivariate time series, stochastic model, anomaly detection, recurrent neural network},
+	location = {Anchorage, AK, USA},
+	series = {KDD '19}
+}
+
+@inbook{10.5555/3454287.3455207,
+	author = {Singh, Gautam and Yoon, Jaesik and Son, Youngsung and Ahn, Sungjin},
+	title = {Sequential Neural Processes},
+	year = {2019},
+	publisher = {Curran Associates Inc.},
+	address = {Red Hook, NY, USA},
+	abstract = {Neural Processes combine the strengths of neural networks and Gaussian processes to achieve both flexible learning and fast prediction in stochastic processes. However, a large class of problems comprises underlying temporal dependency structures in a sequence of stochastic processes that Neural Processes (NP) do not explicitly consider. In this paper, we propose Sequential Neural Processes (SNP) which incorporates a temporal state-transition model of stochastic processes and thus extends its modeling capabilities to dynamic stochastic processes. In applying SNP to dynamic 3D scene modeling, we introduce the Temporal Generative Query Networks. To our knowledge, this is the first 4D model that can deal with the temporal dynamics of 3D scenes. In experiments, we evaluate the proposed methods in dynamic (non-stationary) regression and 4D scene inference and rendering.},
+	booktitle = {Proceedings of the 33rd International Conference on Neural Information Processing Systems},
+	articleno = {920},
+	numpages = {11}
+}
+
+@inproceedings{LYY+19,
+	author = {Li, Longyuan and Yan, Junchi and Yang, Xiaokang and Jin, Yaohui},
+	title = {Learning Interpretable Deep State Space Model for Probabilistic Time Series Forecasting},
+	year = {2019},
+	isbn = {9780999241141},
+	publisher = {AAAI Press},
+	abstract = {Probabilistic time series forecasting involves estimating the distribution of future based on its history, which is essential for risk management in downstream decision-making. We propose a deep state space model for probabilistic time series forecasting whereby the non-linear emission model and transition model are parameterized by networks and the dependency is modeled by recurrent neural nets. We take the automatic relevance determination (ARD) view and devise a network to exploit the exogenous variables in addition to time series. In particular, our ARD network can incorporate the uncertainty of the exogenous variables and eventually helps identify useful exogenous variables and suppress those irrelevant for forecasting. The distribution of multi-step ahead forecasts are approximated by Monte Carlo simulation. We show in experiments that our model produces accurate and sharp probabilistic forecasts. The estimated uncertainty of our forecasting also realistically increases over time, in a spontaneous manner.},
+	booktitle = {Proceedings of the 28th International Joint Conference on Artificial Intelligence},
+	pages = {2901–2908},
+	numpages = {8},
+	location = {Macao, China},
+	series = {IJCAI'19}
+}
+
+@article{CYP+21,
+	author={Choi, Kukjin and Yi, Jihun and Park, Changhwa and Yoon, Sungroh},
+	journal={IEEE Access}, 
+	title={Deep Learning for Anomaly Detection in Time-Series Data: Review, Analysis, and Guidelines}, 
+	year={2021},
+	volume={9},
+	number={},
+	pages={120043-120065},
+	doi={10.1109/ACCESS.2021.3107975}
+}
+
+@InProceedings{YB21,
+	author="Yin, Zexuan
+		and Barucca, Paolo",
+	editor="Mantoro, Teddy
+		and Lee, Minho
+		and Ayu, Media Anugerah
+		and Wong, Kok Wai
+		and Hidayanto, Achmad Nizar",
+	title="Stochastic Recurrent Neural Network for Multistep Time Series Forecasting",
+	booktitle="Neural Information Processing",
+	year="2021",
+	publisher="Springer International Publishing",
+	address="Cham",
+	pages="14--26",
+	abstract="Time series forecasting based on deep architectures has been gaining popularity in recent years due to their ability to model complex non-linear temporal dynamics. The recurrent neural network is one such model capable of handling variable-length input and output. In this paper, we leverage recent advances in deep generative models and the concept of state space models to propose a stochastic adaptation of the recurrent neural network for multistep-ahead time series forecasting, which is trained with stochastic gradient variational Bayes. To capture the stochasticity in time series temporal dynamics, we incorporate a latent random variable into the recurrent neural network to make its transition function stochastic. Our model preserves the architectural workings of a recurrent neural network for which all relevant information is encapsulated in its hidden states, and this flexibility allows our model to be easily integrated into any deep architecture for sequential modelling. We test our model on a wide range of datasets from finance to healthcare; results show that the stochastic recurrent neural network consistently outperforms its deterministic counterpart.",
+	isbn="978-3-030-92185-9"
+}
+
+@inproceedings{CKD+15,
+	author = {Chung, Junyoung and Kastner, Kyle and Dinh, Laurent and Goel, Kratarth and Courville, Aaron and Bengio, Yoshua},
+	title = {A Recurrent Latent Variable Model for Sequential Data},
+	year = {2015},
+	publisher = {MIT Press},
+	address = {Cambridge, MA, USA},
+	abstract = {In this paper, we explore the inclusion of latent random variables into the hidden state of a recurrent neural network (RNN) by combining the elements of the variational autoencoder. We argue that through the use of high-level latent random variables, the variational RNN (VRNN)1 can model the kind of variability observed in highly structured sequential data such as natural speech. We empirically evaluate the proposed model against other related sequential models on four speech datasets and one handwriting dataset. Our results show the important roles that latent random variables can play in the RNN dynamics.},
+	booktitle = {Proceedings of the 28th International Conference on Neural Information Processing Systems - Volume 2},
+	pages = {2980–2988},
+	numpages = {9},
+	location = {Montreal, Canada},
+	series = {NIPS'15}
+}
+
+@article{HS97,
+    author = {Hochreiter, Sepp and Schmidhuber, Jürgen},
+    title = "{Long Short-Term Memory}",
+    journal = {Neural Computation},
+    volume = {9},
+    number = {8},
+    pages = {1735-1780},
+    year = {1997},
+    month = {11},
+    abstract = "{Learning to store information over extended time intervals by recurrent backpropagation takes a very long time, mostly because of insufficient, decaying error backflow. We briefly review Hochreiter's (1991) analysis of this problem, then address it by introducing a novel, efficient, gradient based method called long short-term memory (LSTM). Truncating the gradient where this does not do harm, LSTM can learn to bridge minimal time lags in excess of 1000 discrete-time steps by enforcing constant error flow through constant error carousels within special units. Multiplicative gate units learn to open and close access to the constant error flow. LSTM is local in space and time; its computational complexity per time step and weight is O. 1. Our experiments with artificial data involve local, distributed, real-valued, and noisy pattern representations. In comparisons with real-time recurrent learning, back propagation through time, recurrent cascade correlation, Elman nets, and neural sequence chunking, LSTM leads to many more successful runs, and learns much faster. LSTM also solves complex, artificial long-time-lag tasks that have never been solved by previous recurrent network algorithms.}",
+    issn = {0899-7667},
+    doi = {10.1162/neco.1997.9.8.1735},
+    url = {https://doi.org/10.1162/neco.1997.9.8.1735},
+    eprint = {https://direct.mit.edu/neco/article-pdf/9/8/1735/813796/neco.1997.9.8.1735.pdf},
+}
+
+
+@inproceedings{CMB+14,
+	title = "On the properties of neural machine translation: Encoder–decoder approaches",
+	abstract = "Neural machine translation is a relatively new approach to statistical machine translation based purely on neural networks. The neural machine translation models often consist of an encoder and a decoder. The encoder extracts a fixed-length representation from a variable-length input sentence, and the decoder generates a correct translation from this representation. In this paper, we focus on analyzing the properties of the neural machine translation using two models; RNN Encoder–Decoder and a newly proposed gated recursive convolutional neural network. We show that the neural machine translation performs relatively well on short sentences without unknown words, but its performance degrades rapidly as the length of the sentence and the number of unknown words increase. Furthermore, we find that the proposed gated recursive convolutional network learns a grammatical structure of a sentence automatically.",
+	author = "Kyunghyun Cho and {van Merri{\"e}nboer}, Bart and Dzmitry Bahdanau and Yoshua Bengio",
+	note = "Funding Information: The authors would like to acknowledge the support of the following agencies for research funding and computing support: NSERC, Calcul Qu{\'e}bec, Compute Canada, the Canada Research Chairs and CIFAR. Publisher Copyright: {\textcopyright} 2014 Association for Computational Linguistics; 8th Workshop on Syntax, Semantics and Structure in Statistical Translation, SSST 2014 ; Conference date: 25-10-2014",
+	year = "2014",
+	language = "English (US)",
+	series = "Proceedings of SSST 2014 - 8th Workshop on Syntax, Semantics and Structure in Statistical Translation",
+	publisher = "Association for Computational Linguistics (ACL)",
+	pages = "103--111",
+	editor = "Dekai Wu and Marine Carpuat and Xavier Carreras and Vecchi, {Eva Maria}",
+	booktitle = "Proceedings of SSST 2014 - 8th Workshop on Syntax, Semantics and Structure in Statistical Translation",
+
+}
