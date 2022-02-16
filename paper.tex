@@ -331,9 +331,76 @@ and occasional missing values and heteroskedastic noise.
 
 \section{Related Work} 
 
+There appear to be two interconnected areas related to this
+research. One area is uncertainty representation and propagation
+in recurrent neural models. The other area is handling of
+missing values in time series, again in the context of
+recurrent neural models in particular. 
+
+The importance of uncertainty quantification in deep learning is
+well understood~\cite{MFS+21}.  Recurrent neural networks can
+express forecast uncertainty through predicting distribution
+parameters, such as the mean and the standard deviation, instead
+of point values~\cite{HS97}. When expressing uncertainty by closed-form
+distributions is insufficient, stochastic latent
+variables are introduced into RNNs~\cite{YB21,CKD+15,FSK+16}. 
+Uncertainty representation in RNNs is related to uncertainty
+propagation and multi-step forecasting. For multi-step
+forecasting, uncertainty must be propagated multiple steps into
+the future. Uncertainty propagation is usually achieved through
+random sampling during training or inference~\cite{LYY+19,AV20,YB21}. 
+Our approach differs in that conventional RNN architectures are
+leveraged to represent uncertainty in both the input and
+the output, and that uncertainty propagation is accomplished
+deterministically, without resorting to random sampling, which
+facilitates efficient training and inference.
+
+Handling of missing values in time series has inspired research
+for decades due to the fact that many otherwise efficient and
+robust algorithms, in particular those based on recurrent neural
+architectures, require that all values in the time series
+are present and lie within a valid range~\cite{WSY+21}. A
+widespread approach is to \textit{impute} the data,
+that is, to replace missing values with values inferred from
+other values in the same time series or in other time series
+in the data set~\cite{KC18,SYG+19}. Alternatively, a
+missing value is treated as an observation itself, often by
+introducing an auxiliary indicator variable~\cite{LKW16,BDS21}.
+In our work, we take a third approach --- a missing value,
+either due to an absent observation or in the course of
+multi-step forecasting, is replaced by a parametrically
+specified belief distribution of the value based on the past
+observations. 
+
 \section{Discussion and Future Research}
 
 \section*{Acknowledgements}
+
+We thank PUB+ for providing computational facilities for
+conducting the empirical evaluation. David Tolpin is partially
+supported by Israel-U.S. Industrial Research and Development
+Foundation's Cybersecurity technology for critical power
+infrastructure AI-based centralized defense and edge resilience
+project.
+
+\nocite{BDS21}
+\nocite{CPK+18}
+\nocite{SYG+19}
+\nocite{KC18}
+\nocite{LKW16}
+\nocite{BRH15}
+\nocite{AV20}
+\nocite{FSK+16}
+\nocite{MFS+21}
+\nocite{FSP+16}
+\nocite{SZN+19}
+\nocite{LYY+19}
+\nocite{CYP+21}
+\nocite{YB21}
+\nocite{CKD+15}
+\nocite{HS97}
+\nocite{CMB+14}
+\nocite{WSY+21}
 
 \bibliographystyle{splncs04}
 \bibliography{refs.bib}
