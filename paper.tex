@@ -222,12 +222,12 @@ data as inputs and produces next step predictions as outputs.
 The simplest model is an RNN with a fully-connected readout
 layer to produce forecasts
 (Figure~\ref{fig:dt-conventional-model}).  RNN can be based on
-LSTM~\cite{}, GRU~\cite{}, or another architectural variant, and
+LSTM~\cite{HS97}, GRU~\cite{CMB+14}, or another architectural variant, and
 is often multi-layer.  Architectures  may also include
 intermediate modules and sampling-based variational
-layers~\cite{}. The overall architecture stays almost the same,
-with more connections, intermediate modules and sampling-based
-variational layers.
+layers~\cite{CKD+15,YB21}. The overall architecture stays almost
+the same, with more connections, intermediate modules and
+sampling-based variational layers.
 
 \paragraph{Input and Output} This architecture normally accepts
 observation vectors and outputs vectors of distribution
@@ -268,7 +268,7 @@ However, the basic scheme outlined above poses difficulty in
 applications with high-dimensional time series and partially
 missing observations. Sampling based uncertainty assertion
 impacts performance, and missing observations are often imputed
-in \textit{ad hoc} manner~\cite{}. An architecture which
+heuristically~\cite{LKW16,SYG+19}. An architecture which
 incorporates confidence about data and in which observed and
 predicted data are interchangeable is  highly desirable. For
 example, if out of 5 components 3 were measured and 2 predicted
