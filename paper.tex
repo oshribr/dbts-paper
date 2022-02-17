@@ -328,6 +328,71 @@ and occasional missing values and heteroskedastic noise.
 
 \section{Case Study: Monitoring a Computer Cloud}
 
+We evaluate the proposed architecture on a data set of
+monitoring a cluster of 100 computing nodes in the cloud. For
+each node, the incoming and the outgoing network traffic (in
+bytes) and the CPU usage (relative) are logged with 1 minute
+resolution. 240 hours were logged, resulting in 12000 120-minute
+3-dimensional samples.  We split the dataset into the training,
+validation, and test as 80\%, 10\%, and 10\% correspondingly.
+Since the original data set does not have any missing data
+points, we emulated data sets with missing data by randomly
+removing 5\%, 10\%, 20\%, and 50\% of the data.
+
+We used a 3-layer GRU-based recurrent neural network with hidden
+size 64 and 20\% dropout between layers. We trained the network
+with lookahead depths (number of steps to forecast in the
+future) 2, 4, 8, and 16 using the Adam optimizer with learning
+rate 0.001, training for 20 epochs (sufficient for convergence).
+We performed the training on a cloud computing node with 1
+NVIDIA T4 GPU, 4 Intel Xeon Platinum CPUs, and 64 Gb memory. The
+training of a single model took 20 minutes.
+
+We compared our approach with conventional imputation methods
+`replace by the mean' and `replace by a random sample'.
+In the `replace by mean' method, a missing value is replaced 
+by the mean of the forecast. In the `replace by a random
+sample' method, a missing value is replaced by a random sample
+drawn from the forecast. As a performance metrics, we
+used per-point negative log-likelihood loss on the test set. 
+Tables~\ref{tab:replace-by-mean} and~\ref{tab:replace-by-sample}
+show the difference in loss between uncertainty propagation and
+`replace by the mean' and `replace by a random sample',
+correspondingly. The greater is the number, the worse is the
+forecasting by each of the methods compared to uncertainty
+propagation.
+\begin{table}[t]
+\caption{Uncertainty propagation vs. `replace by the mean`.}
+\label{tab:replace-by-mean}
+	\setlength\tabcolsep{18pt}
+	\centering
+	\begin{tabular}{r|c c c c}
+	 \textbf{missing} & \textbf{2} & \textbf{4} & \textbf{8} & \textbf{16} \\ \hline
+		  \textbf{5\%} & 0.001 & 0.001 &  0.06 & 0.10  \\
+		 \textbf{10\%} & 0.001 & 0.002 &  0.08 & 0.11  \\
+		 \textbf{20\%} & 0.003 & 0.003 &  0.11 & 0.13  \\
+		 \textbf{50\%} & 0.004 & 0.006 &  0.12 & 0.16  
+	\end{tabular}
+\end{table}
+\begin{table}[t]
+\caption{Uncertainty propagation vs. `replace by a random sample`.}
+\vspace{1em}
+\label{tab:replace-by-sample}
+	\setlength\tabcolsep{18pt}
+	\centering
+	\begin{tabular}{r|c c c c}
+	 \textbf{missing} & \textbf{2} & \textbf{4} & \textbf{8} & \textbf{16} \\ \hline
+		  \textbf{5\%} & 0.04 & 0.04 & 0.13 & 0.14 \\
+		 \textbf{10\%} & 0.06 & 0.06 & 0.16 & 0.24 \\
+		 \textbf{20\%} & 0.11 & 0.12 & 0.20 & 0.27 \\
+		 \textbf{50\%} & 0.18 & 0.19 & 0.28 & 0.30   
+	\end{tabular}
+\end{table}
+One can see that in all cases uncertainty propagation provides
+better forecasts than either of the conventional methods.
+
+The code and data for the case studies are available at
+\url{https://bitbucket.org/dtolpin/dbts-studies/}.
 
 \section{Related Work} 
 
