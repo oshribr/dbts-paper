@@ -1,5 +1,6 @@
 \documentclass[runningheads]{llncs}
 \usepackage[T1]{fontenc}
+\usepackage{graphicx}
 \usepackage{float}
 \usepackage{wrapfig}
 \usepackage{hyperref}
@@ -132,7 +133,7 @@ $X \in (\mathbb{R} \cup \bot)^{T \times N}$.
 
 \section{Architecture: Recurrent Neural Network with Uncertainty Propagation}
 
-\begin{figure}
+\begin{figure}[t]
 \begin{subfigure}{.64\textwidth}
 \begin{tikzpicture}
 \node [rectangle, draw] (rnn) {RNN};
@@ -339,28 +340,6 @@ Since the original data set does not have any missing data
 points, we emulated data sets with missing data by randomly
 removing 5\%, 10\%, 20\%, and 50\% of the data.
 
-We used a 3-layer GRU-based recurrent neural network with hidden
-size 64 and 20\% dropout between layers. We trained the network
-with lookahead depths (number of steps to forecast in the
-future) 2, 4, 8, and 16 using the Adam optimizer with learning
-rate 0.001, training for 20 epochs (sufficient for convergence).
-We performed the training on a cloud computing node with 1
-NVIDIA T4 GPU, 4 Intel Xeon Platinum CPUs, and 64 Gb memory. The
-training of a single model took 20 minutes.
-
-We compared our approach with conventional imputation methods
-`replace by the mean' and `replace by a random sample'.
-In the `replace by mean' method, a missing value is replaced 
-by the mean of the forecast. In the `replace by a random
-sample' method, a missing value is replaced by a random sample
-drawn from the forecast. As a performance metrics, we
-used per-point negative log-likelihood loss on the test set. 
-Tables~\ref{tab:replace-by-mean} and~\ref{tab:replace-by-sample}
-show the difference in loss between uncertainty propagation and
-`replace by the mean' and `replace by a random sample',
-correspondingly. The greater is the number, the worse is the
-forecasting by each of the methods compared to uncertainty
-propagation.
 \begin{table}[t]
 \caption{Uncertainty propagation vs. `replace by the mean`.}
 \label{tab:replace-by-mean}
@@ -388,8 +367,44 @@ propagation.
 		 \textbf{50\%} & 0.18 & 0.19 & 0.28 & 0.30   
 	\end{tabular}
 \end{table}
+We used a 3-layer GRU-based recurrent neural network with hidden
+size 64 and 20\% dropout between layers. We trained the network
+with lookahead depths (number of steps to forecast in the
+future) 2, 4, 8, and 16 using the Adam optimizer with learning
+rate 0.001, training for 20 epochs (sufficient for convergence).
+We performed the training on a cloud computing node with 1
+NVIDIA T4 GPU, 4 Intel Xeon Platinum CPUs, and 64 Gb memory. The
+training of a single model took 20 minutes.
+
+We compared our approach with conventional imputation methods
+`replace by the mean' and `replace by a random sample'.
+In the `replace by mean' method, a missing value is replaced 
+by the mean of the forecast. In the `replace by a random
+sample' method, a missing value is replaced by a random sample
+drawn from the forecast. As a performance metrics, we
+used per-point negative log-likelihood loss on the test set. 
+Tables~\ref{tab:replace-by-mean} and~\ref{tab:replace-by-sample}
+show the difference in loss between uncertainty propagation and
+`replace by the mean' and `replace by a random sample',
+correspondingly. The greater is the number, the worse is the
+forecasting by each of the methods compared to uncertainty
+propagation.
 One can see that in all cases uncertainty propagation provides
-better forecasts than either of the conventional methods.
+better forecasts than either of the conventional methods. 
+
+\begin{figure}[t]
+\includegraphics[width=0.9\linewidth]{dist-vs-mean.pdf}
+\caption{Uncertainty propagation vs `replace by mean'. 95\% confidence intervals are shaded.}
+\label{fig:dist-vs-mean}
+\end{figure}
+As an illustration of the advantage of uncertainty propagation,
+consider Figure~\ref{fig:dist-vs-mean}, which shows forecasts
+using uncertainty propagation and `replace by mean' in presence
+of missing values. Forecasts through uncertainty propagation
+result in adequate confidence intervals. However, when missing
+values are replaced by the mean of the belief distribution,
+further forecasts are overconfident and too many observations
+fall outside of 95\% confidence intervals.
 
 The code and data for the case studies are available at
 \url{https://bitbucket.org/dtolpin/dbts-studies/}.
