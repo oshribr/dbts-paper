@@ -374,6 +374,35 @@ observations.
 
 \section{Discussion and Future Research}
 
+We presented a deep probabilistic architecture for uncertainty
+propagation in multivariate time series. This architecture
+organically handles two important problems in deep time series
+modelling: missing data and multi-step forecasting. Empirical
+evaluation demonstrated that our approach outperforms
+conventional baselines in terms of forecasting accuracy, while
+still being easy to implement. Since, unlike some other
+approaches to uncertainty propagation, our architecture
+avoids sampling, uncertainty can be propagated efficiently and
+represented in closed parametric form, rather than approximated
+by samples and posterior intervals.
+
+We confined most of the discussion to the normal uncertainty shape.
+Other distributions can be used instead of the normal
+distributions where appropriate, provided their parameterization
+allows to express a certain observation as well as an uncertain
+belief. Analysis of distributions for representing uncertainty
+and their feasible parameterization is a subject of ongoing
+research. Another research direction worth exploring is
+extension of the presented architecture to bidirectional
+recurrent neural networks~\cite{BRH15}. Bidirectional RNNs allow
+to account for both past and future observations where
+appropriate, but make apparently make uncertainty propagation
+more complicated. Still, preliminary results suggest that
+uncertainty in bidirectional RNNs can be handled in a similar
+manner, further facilitating efficient probabilistic uncertainty
+propagation in a broader class of deep learning models for time
+series.
+
 \section*{Acknowledgements}
 
 We thank PUB+ for providing computational facilities for
