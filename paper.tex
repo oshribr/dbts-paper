@@ -30,7 +30,7 @@ recurrent neural network architectures make it possible to
 forecast in high-dimensional time series, and identify and
 classify novelties early, based on subtle changes in the trends.
 However, mainstream approaches to multi-variate time series
-predictions do not handle well cases when the ongoing forecast
+predictions do not handle well cases when the ongoing forecasts
 must include uncertainty, nor they are robust to missing data.
 We introduce a new architecture for time series monitoring based
 on combination of state-of-the-art methods of forecasting in
@@ -133,7 +133,14 @@ $X \in (\mathbb{R} \cup \bot)^{T \times N}$.
 
 \section{Architecture: Recurrent Neural Network with Uncertainty Propagation}
 
-\begin{figure}[t]
+We introduce here a recurrent neural network architecture which
+facilitates uncertainty propagation. The architecture is capable
+both of handling missing values and of multi-step forecasting.
+We begin with description of conventional forecasting with RNNs.
+Then, we describe our proposed architecture as an extension to
+the conventional model.
+
+\begin{figure}
 \begin{subfigure}{.64\textwidth}
 \begin{tikzpicture}
 \node [rectangle, draw] (rnn) {RNN};
@@ -212,6 +219,8 @@ $X \in (\mathbb{R} \cup \bot)^{T \times N}$.
 \label{fig:dt-time-series-models}
 \end{figure}
 
+\subsection{Conventional Forecasting}
+
 A popular realization of the forecasting model
 $\mathcal{M}_\theta$ is a recurrent neural network (RNN), with
 $\theta$ corresponding to the network parameters.  There is a
@@ -224,7 +233,7 @@ layer to produce forecasts
 (Figure~\ref{fig:dt-conventional-model}).  RNN can be based on
 LSTM~\cite{HS97}, GRU~\cite{CMB+14}, or another architectural variant, and
 is often multi-layer.  Architectures  may also include
-intermediate modules and sampling-based variational
+intermediate modules, and sampling-based variational
 layers~\cite{CKD+15,YB21}. The overall architecture stays almost
 the same, with more connections, intermediate modules and
 sampling-based variational layers.
@@ -232,25 +241,60 @@ sampling-based variational layers.
 \paragraph{Input and Output} This architecture normally accepts
 observation vectors and outputs vectors of distribution
 parameters for the belief distribution of the observations at
-the next time step. In the case of frequently used normal
-distributions, the output vector consists of means $\mu$ and
-standard deviations $\sigma$ of all dimensions and is twice as
-wide as the input.  This allows to also assess uncertainty
-multiple steps into the future: one can repeatedly sample from
-the observation belief distribution at each future step, and
-feed the sample as the input to the following step.
+the next time step. In the simplest case, the network produces a 
+single output for each input, that is the dimensions of the
+input and the output vector coincide. This corresponds to the
+assumption of homoskedasticity of epistemic noise, and either
+the mean squared error (corresponding to the Gaussian error
+distribution) or the mean absolute error (corresponding to the
+Laplace error distribution) is minimized. 
+
+More generally though, the epistemic noise is better modelled
+heteroskedastically, and a two-parameter loss distribution,
+with the location and the scale as the parameters.
+In the case of the frequently used normal (Gaussian)
+distribution, the output vector consists of means $\mu$
+(location) and standard deviations $\sigma$ (scale) of all
+dimensions and is twice as wide as the input.
 
 \paragraph{Training} The model is trained to maximize
-probability of prediction. In the most basic case, a single step
-is predicted for each time step in the series. If a series has
-10 steps, then steps $1 ... 9$ are the input, and the steps $2
-... 10$ are the truth. Following~\eqref{eqn:theta-star}, the
+probability of prediction. In the most basic case, called
+\textit{out-of-sample one-step} forecasting, a single step
+is predicted for each time step in the series. In an $n$-step
+time series, steps $1 ... n-1$ are used as the input, and steps
+$1 ... n$ as the ground truth. Following~\eqref{eqn:theta-star}, the
 network is trained to minimize negative log probability of true
-observations given the predicted belief distributions.
+observations given the predicted belief distributions. More
+generally, a model can also be trained to predict more than a
+single step at once into the future, however this is rarely used in
+practice because the necessary size of the training data set
+grows exponentially with the prediction depth. Instead, future
+predictions are produced recurrently during forecasting.
 
-\paragraph{Novelty detection} After training, the model is used
-to produce predictions of future observations. There are two
-related but different phenomena indication a novelty (anomaly)
+\paragraph{Forecasting} Forecasting is accomplished by passing
+past observations through the model to obtain forecasts for the
+future time steps. In the \textit{out-of-sample one-step} mode,
+a single step into the future is forecast. If a longer forecast
+is required, the current forecast is entered as the input at the
+next time step, time after time, up to the required length.
+Either the location (the point forecast) or a random sample from
+the belief distribution is used as the future input. Using
+random samples also allows to assess uncertainty multiple steps
+into the future: one can repeatedly sample from the belief
+distribution at each future step, and feed the sample as the
+input to the following step. Then, based on produced samples at
+future steps, one can estimate uncertainty intervals. Such
+Monte-Carlo handling of uncertainty is quite expensive
+computationally though, because the standard deviation of
+prediction error decreases as slowly as $\sqrt{N}$
+with the number of samples $N$, on one hand, and uncertainty
+may, in general, grow exponentially with prediction depth, on
+the other hand.
+
+\paragraph{Novelty detection} Forecasts produced by the model
+can be used for a number of purposes, including decision making
+and, in particular, novelty (anomaly) detection. There are two
+related but different phenomena indicating a novelty
 in time series behavior:
 \begin{enumerate}
 \item Predicted volatility of the time series is high, that is, future
@@ -264,7 +308,9 @@ architectures, the hidden state ($h_t$ in
 Figure~\ref{fig:dt-time-series-models}) can be used to identify
 and classify anomalies.
 
-However, the basic scheme outlined above poses difficulty in
+\subsection{Forecasting with Uncertainty Propagation}
+
+The basic scheme outlined above poses difficulty in
 applications with high-dimensional time series and partially
 missing observations. Sampling based uncertainty assertion
 impacts performance, and missing observations are often imputed
@@ -272,21 +318,32 @@ heuristically~\cite{LKW16,SYG+19}. An architecture which
 incorporates confidence about data and in which observed and
 predicted data are interchangeable is  highly desirable. For
 example, if out of 5 components 3 were measured and 2 predicted
-from an earlier step we want to input them both into the next
+from an earlier step we want to input all of them into the next
 time step for further forecasting. In addition, the model
 architecture should be capable of robust uncertainty prediction
 and benefit from training with multiple steps of out-of-sample
 data.
 
-To achieve these objectives, \textbf{we propose the following
-changes} (Figure~\ref{fig:dt-uncertainty-propagation}):
+Our proposed architecture is based on the observation that if
+(at least) the location and the scale are used  to represent
+forecasts, an observation (that is, certain knowledge at a given
+step) can also be expressed using two parameters, by setting the
+location to the observation, and the scale to 0. For the normal
+distribution $\mathcal{N}(\mu, \sigma)$, the location and scale
+parameterization is straightforward, corresponding to $\mu$ and
+$\sigma$, however other belief distributions can be parameterized
+by location and scale as easily, e.g. the log-normal,
+Gamma, or Laplace distribution. For conciseness, we will confine
+further discussion to the case of independent normal belief
+distributions for each component; however, other distribution
+shapes can also be used. Based on this observation,
+\textbf{we propose the following
+extension} to the conventional RNN-based forecasting model
+(Figure~\ref{fig:dt-uncertainty-propagation}):
 
 \begin{enumerate}
-\item The input, as well as the output, is a vector of
-distribution parameters. For simplicity, we will confine further
-discussion to the case of independent normal belief
-distributions for each component; however, other distribution
-shapes can be used. For the independent normal
+\item \textit{The input, as well as the output, is a vector of
+distribution parameters}. For the independent normal
 distributions, the distribution parameter vector consists of the
 means followed by the standard deviations. If the data has 5
 components, the input will be 10-dimensional. For observed data
@@ -295,8 +352,22 @@ standard deviation is zero. For missing data the input is the
 mean and the standard deviation as predicted from the preceding
 time steps.
 
-\item Since we introduce confidence into the input, we cannot
-train the network myopically, on a single step prediction --- or
+\item  Training can, in principle, be accomplished on data with
+missing values, but training on data with missing values
+incurs performance drawbacks and should be avoided. First,
+handling missing values and replacing them with early
+predictions introduces contingency in the forward run of the RNN
+and slows down significantly the execution during training.
+Second, missing values should, in general, themselves be viewed
+as anomalies. One must be able to handle them during inference, 
+but should not rely on their presence in the training data.
+
+Therefore, we devise a scheme for \textit{training our model on data
+that does not contain missing values}. Even in applications where
+missing values are common in inference, training data without
+missing values is usually readily available. However,
+since we introduce confidence into the input, we cannot
+train the network myopically, in out-of-sample one-step manner --- 
 the standard deviations in the input data will always be zero,
 and the network will never learn how to use them. To overcome
 this, we train on multiple predicted steps. We feed each
@@ -315,17 +386,18 @@ for each component.
 
 The ability of probabilistic forecasting with uncertainty, in
 the form of multivariate normal distributions, far into the
-future, opens opportunity for application to more robust
-novelty detection approaches. Instead of detecting novelty based
-on log probability of observations given predictions from the
-past, which is prone to false positives due to observation
-noise, novelties can be detected and analysed by comparing
-predictions of the same time point from different points in the
-past. In this case, KL-divergence between predictions provide a
-theoretically sound and robust mechanism for detection of
-anomalies, and is in particular relevant for monitoring of large
-operation environments with high dimensionality of time series
-and occasional missing values and heteroskedastic noise.
+future, opens opportunity for application to more robust novelty
+detection approaches. Instead of detecting novelty based on log
+probability of observations given predictions from the
+past~\cite{CBK09}, which is prone to false positives due to
+observation noise, novelties can be detected and analysed by
+comparing predictions of the same time point from different
+points in the past.  In this case,
+KL-divergence between predictions provides a theoretically sound
+and robust mechanism for detection of anomalies, and is in
+particular relevant for monitoring of large operation
+environments with high dimensionality of time series and
+occasional missing values and heteroskedastic noise~\cite{ASH08,T19}.
 
 \section{Case Study: Monitoring a Computer Cloud}
 
@@ -336,11 +408,20 @@ bytes) and the CPU usage (relative) are logged with 1 minute
 resolution. 240 hours were logged, resulting in 12000 120-minute
 3-dimensional samples.  We split the dataset into the training,
 validation, and test as 80\%, 10\%, and 10\% correspondingly.
-Since the original data set does not have any missing data
+Since the original data set does not have many missing data
 points, we emulated data sets with missing data by randomly
 removing 5\%, 10\%, 20\%, and 50\% of the data.
 
-\begin{table}[t]
+We used a 3-layer GRU-based recurrent neural network with hidden
+size 64 and 20\% dropout between layers. We trained the network
+with lookahead depths (number of steps to forecast in the
+future) 2, 4, 8, and 16 using the Adam optimizer with learning
+rate 0.001, training for 20 epochs (sufficient for convergence).
+We performed the training on a cloud computing node with 1
+NVIDIA T4 GPU, 4 Intel Xeon Platinum CPUs, and 64 Gb memory. The
+training of a single model took 20 minutes.
+
+\begin{table}
 \caption{Uncertainty propagation vs. `replace by the mean`.}
 \label{tab:replace-by-mean}
 	\setlength\tabcolsep{18pt}
@@ -353,7 +434,7 @@ removing 5\%, 10\%, 20\%, and 50\% of the data.
 		 \textbf{50\%} & 0.004 & 0.006 &  0.12 & 0.16  
 	\end{tabular}
 \end{table}
-\begin{table}[t]
+\begin{table}
 \caption{Uncertainty propagation vs. `replace by a random sample`.}
 \vspace{1em}
 \label{tab:replace-by-sample}
@@ -367,18 +448,9 @@ removing 5\%, 10\%, 20\%, and 50\% of the data.
 		 \textbf{50\%} & 0.18 & 0.19 & 0.28 & 0.30   
 	\end{tabular}
 \end{table}
-We used a 3-layer GRU-based recurrent neural network with hidden
-size 64 and 20\% dropout between layers. We trained the network
-with lookahead depths (number of steps to forecast in the
-future) 2, 4, 8, and 16 using the Adam optimizer with learning
-rate 0.001, training for 20 epochs (sufficient for convergence).
-We performed the training on a cloud computing node with 1
-NVIDIA T4 GPU, 4 Intel Xeon Platinum CPUs, and 64 Gb memory. The
-training of a single model took 20 minutes.
-
 We compared our approach with conventional imputation methods
 `replace by the mean' and `replace by a random sample'.
-In the `replace by mean' method, a missing value is replaced 
+In the `replace by the mean' method, a missing value is replaced 
 by the mean of the forecast. In the `replace by a random
 sample' method, a missing value is replaced by a random sample
 drawn from the forecast. As a performance metrics, we
@@ -392,14 +464,15 @@ propagation.
 One can see that in all cases uncertainty propagation provides
 better forecasts than either of the conventional methods. 
 
-\begin{figure}[t]
-\includegraphics[width=0.9\linewidth]{dist-vs-mean.pdf}
-\caption{Uncertainty propagation vs `replace by mean'. 95\% confidence intervals are shaded.}
+\begin{figure}
+\centering
+\includegraphics[width=0.95\linewidth]{dist-vs-mean.pdf}
+\caption{Uncertainty propagation vs `replace by the mean'. 95\% confidence intervals are shaded.}
 \label{fig:dist-vs-mean}
 \end{figure}
 As an illustration of the advantage of uncertainty propagation,
 consider Figure~\ref{fig:dist-vs-mean}, which shows forecasts
-using uncertainty propagation and `replace by mean' in presence
+using uncertainty propagation and `replace by the mean' in presence
 of missing values. Forecasts through uncertainty propagation
 result in adequate confidence intervals. However, when missing
 values are replaced by the mean of the belief distribution,
@@ -476,7 +549,7 @@ research. Another research direction worth exploring is
 extension of the presented architecture to bidirectional
 recurrent neural networks~\cite{BRH15}. Bidirectional RNNs allow
 to account for both past and future observations where
-appropriate, but make apparently make uncertainty propagation
+appropriate, but apparently make uncertainty propagation
 more complicated. Still, preliminary results suggest that
 uncertainty in bidirectional RNNs can be handled in a similar
 manner, further facilitating efficient probabilistic uncertainty
