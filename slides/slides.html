@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:8000/ -->
+<html class="reveal-full-page"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>reveal.js</title>
+
+  <link rel="stylesheet" href="./slides_files/main.css">
+<style type="text/css">.hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}</style><link rel="stylesheet" href="./slides_files/katex.min.css"><script type="text/javascript" src="./slides_files/katex.min.js"></script><script type="text/javascript" src="./slides_files/auto-render.min.js"></script></head>
+
+<body class="reveal-viewport" style="--slide-width:960px; --slide-height:700px; --slide-scale:1.70606;">
+  <div class="theme-font-montserrat theme-color-white-blue" style="width: 100%; height: 100%;">
+    <div class="reveal slide focused has-horizontal-slides ready" role="application" data-transition-speed="default" data-background-transition="slide" style="">
+      <div class="slides" style="width: 960px; height: 700px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(1.70606);">
+        <section class="present" style="display: block;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 140px; height: auto;">
+            <div class="sl-block-content">
+              <h2>Monitoring Time Series With Missing Values:</h2>
+
+              <h3>a Deep Probabilistic Approach</h3>
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: block;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 88px; top: 91px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1>Introduction</h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 11; line-height: 1.95;" data-has-line-height="">
+              <ul>
+                <li>Advances in time series forecasting due to adoption of ML-RNN</li>
+                <li>Mainstream approaches to multi-variate time series modelling do not handle well
+                  cases when uncertainty is involved.</li>
+                <li>&nbsp;Imputation schemes were proposed for dealing with missing data</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: block;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1>Goals</h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 12; line-height: 1.95;" data-has-line-height="">
+              <ul>
+                <li style="text-align:left">Handle missing inputs in some or all of
+                  the components in a multivariate time series.</li>
+                <li style="text-align:left">Accomplish multi-step probabilistic forecasting</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 140px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1>Problem:</h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 77px; top: 287px; height: auto;">
+            <div class="sl-block-content" style="z-index: 11;">
+              <h2>Multivariate Time Series Forecasting</h2>
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1>Therems</h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 12; line-height: 1.95;" data-has-line-height="">
+              <ul>
+                <li style="text-align:left">A <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">time</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">series</mtext></mrow><annotation encoding="application/x-tex">\textit{time series}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6679em;"></span><span class="mord text"><span class="mord textit">time&nbsp;series</span></span></span></span></span></span> is a matrix <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6833em;"></span><span class="mord mathnormal" style="margin-right: 0.0785em;">X</span></span></span></span></span> of shape
+                  <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>×</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">T\times N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.7667em; vertical-align: -0.0833em;"></span><span class="mord mathnormal" style="margin-right: 0.1389em;">T</span><span class="mspace" style="margin-right: 0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right: 0.2222em;"></span></span><span class="base"><span class="strut" style="height: 0.6833em;"></span><span class="mord mathnormal" style="margin-right: 0.109em;">N</span></span></span></span></span>,
+                  where <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi></mrow><annotation encoding="application/x-tex">T</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6833em;"></span><span class="mord mathnormal" style="margin-right: 0.1389em;">T</span></span></span></span></span> is the number of time steps and <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6833em;"></span><span class="mord mathnormal" style="margin-right: 0.109em;">N</span></span></span></span></span> is the number
+                  of dimensions
+                </li>
+                <li style="text-align:left">
+                  A <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6944em;"></span><span class="mord mathnormal" style="margin-right: 0.0315em;">k</span></span></span></span></span>-step probabilistic <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">forecast</mtext></mrow><annotation encoding="application/x-tex">\textit{forecast}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6944em;"></span><span class="mord text"><span class="mord textit">forecast</span></span></span></span></span></span>
+                  <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="script">F</mi><mrow><mi>t</mi><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\mathcal{F}_{tk}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8333em; vertical-align: -0.15em;"></span><span class="mord"><span class="mord mathcal" style="margin-right: 0.0993em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3361em;"><span class="" style="top: -2.55em; margin-left: -0.0993em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right: 0.0315em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span></span> at time <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi></mrow><annotation encoding="application/x-tex">t</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6151em;"></span><span class="mord mathnormal">t</span></span></span></span></span> is the belief distribution of
+                  time series <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn><mo>:</mo><mi>t</mi><mo>+</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">X_{t+1:t+k}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8917em; vertical-align: -0.2083em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.0785em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3361em;"><span class="" style="top: -2.55em; margin-left: -0.0785em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mrel mtight">:</span><span class="mord mathnormal mtight">t</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight" style="margin-right: 0.0315em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.2083em;"><span class=""></span></span></span></span></span></span></span></span></span></span> for time steps <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>+</mo><mn>1...</mn><mi>t</mi><mo>+</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">t+1 ... t+k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6984em; vertical-align: -0.0833em;"></span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right: 0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right: 0.2222em;"></span></span><span class="base"><span class="strut" style="height: 0.7278em; vertical-align: -0.0833em;"></span><span class="mord">1...</span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right: 0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right: 0.2222em;"></span></span><span class="base"><span class="strut" style="height: 0.6944em;"></span><span class="mord mathnormal" style="margin-right: 0.0315em;">k</span></span></span></span></span> given the
+                  observed time series <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mrow><mn>1</mn><mo>:</mo><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">X_{1:t}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8333em; vertical-align: -0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.0785em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3011em;"><span class="" style="top: -2.55em; margin-left: -0.0785em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mrel mtight">:</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span></span> for time steps <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1...</mn><mi>t</mi></mrow><annotation encoding="application/x-tex">1...t</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6444em;"></span><span class="mord">1...</span><span class="mord mathnormal">t</span></span></span></span></span>.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1>The Model</h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 12; line-height: 1.95;" data-has-line-height="">
+
+              <div><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="script">F</mi><mrow><mi>t</mi><mi>k</mi></mrow></msub><mo>=</mo><msub><mi mathvariant="script">M</mi><mi>θ</mi></msub><mo stretchy="false">(</mo><msub><mi>X</mi><mrow><mn>1</mn><mo>:</mo><mi>t</mi></mrow></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{F}_{tk} = \mathcal{M}_\theta(X_{1:t})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8333em; vertical-align: -0.15em;"></span><span class="mord"><span class="mord mathcal" style="margin-right: 0.0993em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3361em;"><span class="" style="top: -2.55em; margin-left: -0.0993em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right: 0.0315em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.2778em;"></span></span><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord"><span class="mord mathcal">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3361em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.0278em;">θ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.0785em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3011em;"><span class="" style="top: -2.55em; margin-left: -0.0785em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mrel mtight">:</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></div>
+              <!-- <div>$\mathcal{M}_\theta(X_{1:t})$ is a multivariate time series model</div> -->
+              <div>
+                <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>θ</mi><mo>∗</mo></msup><mo>=</mo><mi>arg</mi><mo>⁡</mo><msub><mrow><mi>min</mi><mo>⁡</mo></mrow><mi>θ</mi></msub><msub><mi mathvariant="double-struck">E</mi><mrow><mi>X</mi><mo>∈</mo><mi mathvariant="script">X</mi><mo separator="true">,</mo><mi>t</mi><mo>∈</mo><mn>1...</mn><mi>T</mi><mo>−</mo><mi>k</mi></mrow></msub><mrow><mo fence="true">[</mo><mo>−</mo><mi>log</mi><mo>⁡</mo><mi>Pr</mi><mo>⁡</mo><mo stretchy="false">(</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn><mo>:</mo><mi>t</mi><mo>+</mo><mi>k</mi></mrow></msub><mi mathvariant="normal">∣</mi><msub><mi>M</mi><mi>θ</mi></msub><mo stretchy="false">(</mo><msub><mi>X</mi><mrow><mn>1</mn><mo>:</mo><mi>t</mi></mrow></msub><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\theta^* = \arg\min_\theta \mathbb{E}_{X \in \mathcal{X},t
+                \in 1 ... T-k}\left[ -\log \Pr(X_{t+1:t+k}|M_\theta(X_{1:t}))\right]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.0278em;">θ</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.6887em;"><span class="" style="top: -3.063em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.2778em;"></span></span><span class="base"><span class="strut" style="height: 1.0361em; vertical-align: -0.2861em;"></span><span class="mop">ar<span style="margin-right: 0.0139em;">g</span></span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mop"><span class="mop">min</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3361em;"><span class="" style="top: -2.55em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.0278em;">θ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mord"><span class="mord mathbb">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3361em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right: 0.0785em;">X</span><span class="mrel mtight">∈</span><span class="mord mathcal mtight" style="margin-right: 0.1464em;">X</span><span class="mpunct mtight">,</span><span class="mord mathnormal mtight">t</span><span class="mrel mtight">∈</span><span class="mord mtight">1...</span><span class="mord mathnormal mtight" style="margin-right: 0.1389em;">T</span><span class="mbin mtight">−</span><span class="mord mathnormal mtight" style="margin-right: 0.0315em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.2861em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top: 0em;">[</span><span class="mord">−</span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mop">lo<span style="margin-right: 0.0139em;">g</span></span><span class="mspace" style="margin-right: 0.1667em;"></span><span class="mop">Pr</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.0785em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3361em;"><span class="" style="top: -2.55em; margin-left: -0.0785em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mrel mtight">:</span><span class="mord mathnormal mtight">t</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight" style="margin-right: 0.0315em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.2083em;"><span class=""></span></span></span></span></span></span><span class="mord">∣</span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.109em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3361em;"><span class="" style="top: -2.55em; margin-left: -0.109em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.0278em;">θ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.0785em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3011em;"><span class="" style="top: -2.55em; margin-left: -0.0785em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mrel mtight">:</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mclose">))</span><span class="mclose delimcenter" style="top: 0em;">]</span></span></span></span></span></span>
+              </div>
+
+              <div>
+                When the model is differentiable by <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi></mrow><annotation encoding="application/x-tex">\theta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6944em;"></span><span class="mord mathnormal" style="margin-right: 0.0278em;">θ</span></span></span></span></span>, the task is
+                usually accomplished by performing a stochastic gradient loss
+                minimization.
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h3>Architecture: </h3>
+              <h5>RNN with Uncertainty Propagation</h5>
+              <h5>VS.</h5>
+              <h5>Conventional Forecasting</h5>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="image" style="width: 806.4px; height: 393.683px; left: 80px; top: 264.159px;" data-name="image-317524" data-block-id="7aaff6148a5fe9f2c037d1cc049d6971">
+            <div class="sl-block-content" style="z-index: 12;"><img src="./slides_files/model-fig.png" data-natural-width="1737" data-natural-height="848">
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block-c" data-block-type="text" style="width: 806px; left: 77px; top: 301px; height: auto;">
+            <div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text">
+              <h1>Conventional Forecasting</h1>
+            </div>
+            <ul>
+              <li> <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">Input</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">and</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">Output</mtext></mrow><annotation encoding="application/x-tex">\textit{Input and Output}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8889em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">Input&nbsp;and&nbsp;Output</span></span></span></span></span></span> </li>
+              <li> <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">Training</mtext></mrow><annotation encoding="application/x-tex">\textit{Training}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8778em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">Training</span></span></span></span></span></span> </li>
+              <li> <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">Forecasting</mtext></mrow><annotation encoding="application/x-tex">\textit{Forecasting}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8778em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">Forecasting</span></span></span></span></span></span> </li>
+              <li> <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">Novelty</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">detection</mtext></mrow><annotation encoding="application/x-tex">\textit{Novelty detection}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8889em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">Novelty&nbsp;detection</span></span></span></span></span></span> </li>
+            </ul>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">Input</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">and</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">Output</mtext></mrow><annotation encoding="application/x-tex">\textit{Input and Output}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8889em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">Input&nbsp;and&nbsp;Output</span></span></span></span></span></span></h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 12; line-height: 1.95;" data-has-line-height="">
+              In the simplest case, the network produces a
+              single output for each input, that is the dimensions of the
+              input and the output vector coincide. This corresponds to the
+              assumption of homoskedasticity of epistemic noise, and either
+              the mean squared error (corresponding to the Gaussian error
+              distribution) or the mean absolute error (corresponding to the
+              Laplace error distribution) is minimized.
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">Training</mtext></mrow><annotation encoding="application/x-tex">\textit{Training}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8778em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">Training</span></span></span></span></span></span></h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 12; line-height: 1.95;" data-has-line-height="">
+              The model is trained to maximize
+              probability of prediction. In the most basic case, called
+              <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">out-of-sample</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">one-step</mtext></mrow><annotation encoding="application/x-tex">\textit{out-of-sample one-step}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8889em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">out-of-sample&nbsp;one-step</span></span></span></span></span></span> forecasting, a single step
+              is predicted for each time step in the series. In an <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span></span>-step
+              time series, steps <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1...</mn><mi>n</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">1 ... n-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.7278em; vertical-align: -0.0833em;"></span><span class="mord">1...</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right: 0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right: 0.2222em;"></span></span><span class="base"><span class="strut" style="height: 0.6444em;"></span><span class="mord">1</span></span></span></span></span> are used as the input, and steps
+              <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1...</mn><mi>n</mi></mrow><annotation encoding="application/x-tex">1 ... n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.6444em;"></span><span class="mord">1...</span><span class="mord mathnormal">n</span></span></span></span></span> as the ground truth.
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">Forecasting</mtext></mrow><annotation encoding="application/x-tex">\textit{Forecasting}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8778em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">Forecasting</span></span></span></span></span></span></h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 12; line-height: 1.95;" data-has-line-height="">
+              Forecasting is accomplished by passing
+              past observations through the model to obtain forecasts for the
+              future time steps. In the <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">out-of-sample</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">one-step</mtext></mrow><annotation encoding="application/x-tex">\textit{out-of-sample one-step}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8889em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">out-of-sample&nbsp;one-step</span></span></span></span></span></span> mode,
+              a single step into the future is forecast. If a longer forecast
+              is required, the current forecast is entered as the input at the
+              next time step, time after time, up to the required length.
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">Novelty</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">detection</mtext></mrow><annotation encoding="application/x-tex">\textit{Novelty detection}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8889em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">Novelty&nbsp;detection</span></span></span></span></span></span></h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 12; line-height: 1.95;" data-has-line-height="">
+              Forecasts produced by the model
+              can be used for a number of purposes, including decision making
+              and, in particular, novelty (anomaly) detection.
+            </div>
+            <ol>
+              <li>
+                Predicted volatility of the time series is high, that is, future
+                observations can only be forecast uncertainly (with high variance).
+              </li>
+              <li>
+                Probability of actual observations, when observed, given a prediction
+                from a past state, is low.
+              </li>
+            </ol>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block-c" data-block-type="text" style="width: 806px; left: 77px; top: 301px; height: auto;">
+            <div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text">
+              <h3>Issues with Conventional Forecasting</h3>
+            </div>
+          </div>
+          <ul>
+            <li>
+              The basic scheme outlined above poses difficulty in
+              applications with high-dimensional time series and partially
+              missing observations.
+            </li>
+            <li>
+              An architecture which
+              incorporates confidence about data and in which observed and
+              predicted data are interchangeable is  highly desirable.
+            </li>
+            <li>
+              the architecture should be capable of robust uncertainty 
+              prediction and benefit from training with multiple steps
+              of out-of-sample data.
+            </li>
+          </ul>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h2>Proposed architecture</h2>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 12; line-height: 1.95;" data-has-line-height="">
+              Our proposed architecture is based on the observation that if
+              (at least) the location and the scale are used  to represent
+              forecasts, an observation (that is, certain knowledge at a given
+              step) can also be expressed using two parameters, by setting the
+              location to the observation, and the scale to 0. 
+            </div>
+          </div>
+        </section>
+        <section hidden="" aria-hidden="true" class="future" style="display: none;">
+          <div class="sl-block" data-block-type="text" style="width: 806px; left: 74px; top: 78px; height: auto;">
+            <div class="sl-block-content" style="z-index: 10;">
+              <h1><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">Input</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">and</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">Output</mtext></mrow><annotation encoding="application/x-tex">\textit{Input and Output}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8889em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">Input&nbsp;and&nbsp;Output</span></span></span></span></span></span></h1>
+            </div>
+          </div>
+          <div class="sl-block" data-block-type="text" style="height: auto; width: 840px; left: 60px; top: 215px;" data-name="text-70e0de">
+            <div class="sl-block-content" style="z-index: 12; line-height: 1.95;" data-has-line-height="">
+                <span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="italic">The</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">input,</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">as</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">well</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">as</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">the</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">output,</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">is</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">a</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">vector</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">of</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">distribution</mtext><mtext>&nbsp;</mtext><mtext mathvariant="italic">parameters.</mtext></mrow><annotation encoding="application/x-tex">\textit{The input, as well as the output, is a vector of
+                distribution parameters.}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.8889em; vertical-align: -0.1944em;"></span><span class="mord text"><span class="mord textit">The&nbsp;input,&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;output,&nbsp;is&nbsp;a&nbsp;vector&nbsp;of&nbsp;distribution&nbsp;parameters.</span></span></span></span></span></span> For the independent normal
+                distributions, the distribution parameter vector consists of the
+                means followed by the standard deviations.
+            </div>
+          </div>
+        </section>
+      </div>
+    <div class="backgrounds"><div class="slide-background present" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" data-loaded="true" style="display: block;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div><div class="slide-background future" style="display: none;"><div class="slide-background-content"></div></div></div><div class="slide-number" style="display: none;"></div><aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded" style="display: block;"><button class="navigate-left" aria-label="previous slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-right enabled highlight" aria-label="next slide"><div class="controls-arrow"></div></button>
+			<button class="navigate-up" aria-label="above slide" disabled="disabled"><div class="controls-arrow"></div></button>
+			<button class="navigate-down" aria-label="below slide" disabled="disabled"><div class="controls-arrow"></div></button></aside><div class="progress" style="display: block;"><span style="transform: scaleX(0);"></span></div><div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div><div class="pause-overlay"><button class="resume-button">Resume presentation</button></div><div class="aria-status" aria-live="polite" aria-atomic="true" style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">Monitoring Time Series With Missing Values: a Deep Probabilistic Approach </div></div>
+  </div>
+  <script src="./slides_files/reveal.js"></script>
+  <script src="./slides_files/notes.js"></script>
+  <script src="./slides_files/markdown.js"></script>
+  <script src="./slides_files/highlight.js"></script>
+  <script src="./slides_files/math.js"></script>
+  <script src="./slides_files/mermaid.min.js"></script>
+
+  <script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+      hash: true,
+      width: 960,
+      height: 700,
+      transition: "slide",
+      backgroundTransition: "slide",
+      center: false,
+      katex: {
+        local: 'node_modules/katex',
+      },
+      // Learn about plugins: https://revealjs.com/plugins/
+      plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX]
+    });
+  </script>
+<script src="./slides_files/livereload.js" async="" defer=""></script>
+
+</body></html>
